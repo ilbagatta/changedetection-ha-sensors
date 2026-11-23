@@ -42,8 +42,9 @@ tests/            pytest con HA vero (pytest-homeassistant-custom-component), se
 - **Carico sul server**: a ogni giro solo `GET /watch`; storico e snapshot solo per i watch con `last_changed` nuovo
   (cache nel coordinator, non persistita: al riavvio si rilegge tutto una volta). Max 4 richieste parallele.
 - **Evento** `changedetection_ha_sensors_change` (dati = `Watch.as_dict()`): mai al primo caricamento ne' per watch nuovi.
-- **Sensore Recent changes**: stato = ora dell'ultima modifica; attributo `watches` (lista per la card) escluso dal
-  recorder; attributo `changedetection_card: true` usato dalla card per trovare l'entita' da sola.
+- **Sensore Recent changes**: stato = ora dell'ultima modifica; attributo `watches` = **tutti** i watch dal piu'
+  recente (max `MAX_LIST_ITEMS`), escluso dal recorder. Righe (`limit`) ed esclusioni (`exclude`, uuid) le decide la card;
+  l'opzione `limit` dell'integrazione e' stata tolta nella 0.2.0; attributo `changedetection_card: true` usato dalla card per trovare l'entita' da sola.
 - **Opzioni numeriche**: il `NumberSelector` restituisce float; si salvano come int e si leggono sempre con
   `const.int_option()` (bug della 0.1.1: `slice indices must be integers`).
 - **Valuta**: opzione (default EUR), il prezzo e' `device_class: monetary` senza `state_class`.
@@ -86,4 +87,4 @@ CI verde → `gh release create vX.Y.Z --latest --notes-file …`.
 
 ## Stato
 
-- 0.1.2 pubblicata su GitHub (fix opzioni float). Installata sull'HA di casa via HACS dall'utente. Da installare sull'HA di casa e poi dismettere il vecchio command_line.
+- 0.2.0: esclusioni nella card. (0.1.2 fix opzioni float, 0.1.3 selettore entita' della card.) Installata sull'HA di casa via HACS dall'utente. Da installare sull'HA di casa e poi dismettere il vecchio command_line.

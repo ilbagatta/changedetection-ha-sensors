@@ -78,7 +78,6 @@ Copy `custom_components/changedetection_ha_sensors` into your `config/custom_com
 | Option | Default | |
 |---|---|---|
 | Update interval | 5 min | How often the watch list is read. |
-| Items in "Recent changes" | 10 | Rows available to the card. |
 | Snapshots to scan for the previous price | 10 | How far back to look for a different price. |
 | Price currency | `EUR` | ISO code used as the unit of the price sensors and by the card. |
 | Watches to exclude | — | No entities, not shown in the card. |
@@ -95,7 +94,8 @@ type: custom:changedetection-card
 |---|---|---|
 | `entity` | auto | The `Recent changes` sensor (not a per-watch sensor); found automatically if omitted. |
 | `title` | `Changedetection` | `""` hides the header. |
-| `limit` | `10` | Rows to show (up to the integration option). |
+| `limit` | `10` | Rows to show. |
+| `exclude` | — | Watches to hide in this card (list of watch UUIDs; pick them by name in the visual editor). |
 | `show_text` | `true` | For watches without a price, show the detected text under the name. |
 
 The card uses your theme colours (`--success-color`, `--error-color`, `--accent-color`, `--divider-color`) and works in

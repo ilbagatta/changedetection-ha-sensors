@@ -10,7 +10,7 @@ from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .const import CONF_CURRENCY, CONF_LIMIT, DEFAULT_CURRENCY, int_option
+from .const import CONF_CURRENCY, DEFAULT_CURRENCY, MAX_LIST_ITEMS
 from .coordinator import ChangedetectionConfigEntry, ChangedetectionCoordinator
 from .entity import ServerEntity, WatchEntity
 
@@ -105,7 +105,7 @@ class LastChangedSensor(WatchEntity, SensorEntity):
 
 
 class RecentChangesSensor(ServerEntity, SensorEntity):
-    """Stato: ora dell'ultima modifica. Attributo `watches`: le ultime N modifiche, usato dalla card."""
+    """Stato: ora dell'ultima modifica. Attributo `watches`: tutti i watch dal piu' recente, usato dalla card."""
 
     _attr_device_class = SensorDeviceClass.TIMESTAMP
     # La lista cambia spesso e puo' essere lunga: fuori dal registro storico
@@ -121,10 +121,9 @@ class RecentChangesSensor(ServerEntity, SensorEntity):
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
-        limit = int_option(self.coordinator.config_entry.options, CONF_LIMIT)
         currency = self.coordinator.config_entry.options.get(CONF_CURRENCY, DEFAULT_CURRENCY)
         watches = []
-        for watch in self.coordinator.recent(limit):
+        for watch in self.coordinator.recent(MAX_LIST_ITEMS):
             item = watch.as_dict()
             item["text"] = watch.text[:200]
             watches.append(item)

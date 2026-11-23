@@ -5,20 +5,21 @@
  *   entity: sensor.changedetection_io_recent_changes   # optional: found automatically (only this sensor works)
  *   title: Changedetection                             # optional, "" hides the header
  *   limit: 10                                          # optional
+ *   exclude: [<uuid>, ...]                             # optional: watches to hide
  *   show_text: true                                    # optional: text of watches without a price
  */
-const CARD_VERSION = "0.1.3";
+const CARD_VERSION = "0.2.0";
 
 const I18N = {
   en: {
     product: "Product", price: "Price", when: "When", today: "today", yesterday: "yesterday",
     empty: "No changes yet", missing: "Entity not found", out: "out of stock", unviewed: "not viewed yet",
-    title: "Title", entity: "Recent changes sensor", limit: "Rows", show_text: "Show text of watches without a price",
+    title: "Title", entity: "Recent changes sensor", limit: "Rows", exclude: "Watches to hide", show_text: "Show text of watches without a price",
   },
   it: {
     product: "Prodotto", price: "Prezzo", when: "Quando", today: "oggi", yesterday: "ieri",
     empty: "Ancora nessuna modifica", missing: "Entità non trovata", out: "esaurito", unviewed: "non ancora visto",
-    title: "Titolo", entity: "Sensore Ultime modifiche", limit: "Righe", show_text: "Mostra il testo dei watch senza prezzo",
+    title: "Titolo", entity: "Sensore Ultime modifiche", limit: "Righe", exclude: "Watch da nascondere", show_text: "Mostra il testo dei watch senza prezzo",
   },
 };
 
@@ -150,7 +151,8 @@ class ChangedetectionCard extends HTMLElement {
     if (!state) {
       body = `<div class="empty">${esc(this._t("missing"))}${id ? `: ${esc(id)}` : ""}</div>`;
     } else {
-      const items = (state.attributes.watches || []).slice(0, this._config.limit);
+      const hidden = new Set(this._config.exclude || []);
+      const items = (state.attributes.watches || []).filter((w) => !hidden.has(w.uuid)).slice(0, this._config.limit);
       const currency = state.attributes.currency;
       body = items.length
         ? `<table>
@@ -170,8 +172,10 @@ class ChangedetectionCard extends HTMLElement {
              color: var(--secondary-text-color); text-align: left; padding: 0 0 6px; }
         td { padding: 8px 0; border-top: 1px solid var(--divider-color, rgba(127,127,127,.15)); vertical-align: baseline; }
         th.price, td.price, th.when, td.when { text-align: right; white-space: nowrap; }
-        td.price { padding-left: 12px; font-variant-numeric: tabular-nums; }
-        td.when { padding-left: 14px; color: var(--secondary-text-color); font-size: .88em; }
+        th.price, td.price { padding-left: 12px; }
+        th.when, td.when { padding-left: 16px; }
+        td.price { font-variant-numeric: tabular-nums; }
+        td.when { color: var(--secondary-text-color); font-size: .88em; }
         tr.today td.when { color: var(--primary-text-color); }
         td.dot { width: 12px; padding-right: 4px; }
         td.dot span { display: inline-block; width: 6px; height: 6px; border-radius: 50%;
@@ -207,6 +211,17 @@ class ChangedetectionCardEditor extends HTMLElement {
     else this._render();
   }
 
+  _watchOptions() {
+    // Tutti i watch dal sensore "Recent changes" (+ quelli gia' nascosti, anche se spariti)
+    const id = isListEntity(this._hass, this._config.entity) ? this._config.entity : findEntity(this._hass);
+    const watches = (id && this._hass.states[id]?.attributes?.watches) || [];
+    const options = watches.map((w) => ({ value: w.uuid, label: w.title }));
+    for (const uuid of this._config.exclude || []) {
+      if (!options.some((o) => o.value === uuid)) options.push({ value: uuid, label: uuid });
+    }
+    return options;
+  }
+
   _render() {
     if (!this._hass || !this._config) return;
     const lang = (this._hass.locale?.language || "en").split("-")[0];
@@ -226,6 +241,10 @@ class ChangedetectionCardEditor extends HTMLElement {
       { name: "title", selector: { text: {} } },
       { name: "limit", selector: { number: { min: 1, max: 50, mode: "box" } } },
       { name: "show_text", selector: { boolean: {} } },
+      {
+        name: "exclude",
+        selector: { select: { multiple: true, mode: "dropdown", sort: true, options: this._watchOptions() } },
+      },
     ];
     this._form.data = { limit: 10, show_text: true, ...this._config };
   }

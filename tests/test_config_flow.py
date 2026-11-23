@@ -11,7 +11,6 @@ from custom_components.changedetection_ha_sensors.api import CannotConnect, Inva
 from custom_components.changedetection_ha_sensors.const import (
     CONF_API_KEY,
     CONF_EXCLUDED,
-    CONF_LIMIT,
     CONF_URL,
     CONF_VERIFY_SSL,
     DOMAIN,
@@ -85,11 +84,11 @@ async def test_options(hass: HomeAssistant, server, entry) -> None:
     result = await hass.config_entries.options.async_configure(
         result["flow_id"],
         # come il frontend: il NumberSelector manda float
-        {"scan_interval": 10.0, CONF_LIMIT: 5.0, "history_depth": 10.0, "currency": "EUR", CONF_EXCLUDED: [HELMET]},
+        {"scan_interval": 10.0, "history_depth": 10.0, "currency": "EUR", CONF_EXCLUDED: [HELMET]},
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     await hass.async_block_till_done()
     assert entry.options[CONF_EXCLUDED] == [HELMET]
-    assert entry.options[CONF_LIMIT] == 5
-    assert isinstance(entry.options[CONF_LIMIT], int)
+    assert entry.options["history_depth"] == 10
+    assert isinstance(entry.options["history_depth"], int)
     assert entry.state is ConfigEntryState.LOADED

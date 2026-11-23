@@ -47,14 +47,12 @@
         "title": "Opzioni",
         "data": {
           "scan_interval": "Aggiornamento",
-          "limit": "Voci in \"Ultime modifiche\"",
           "history_depth": "Rilevazioni da esaminare per il prezzo precedente",
           "currency": "Valuta dei prezzi",
           "excluded_watches": "Watch da escludere"
         },
         "data_description": {
           "scan_interval": "Ogni quanti minuti leggere i watch dal server.",
-          "limit": "Quante modifiche recenti mostrare nella card.",
           "history_depth": "Quante rilevazioni precedenti esaminare, al massimo, per trovare un prezzo diverso da quello attuale.",
           "currency": "Codice ISO, per esempio EUR.",
           "excluded_watches": "Questi watch non creano entità e non compaiono nella card."

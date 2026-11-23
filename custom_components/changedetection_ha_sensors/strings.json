@@ -47,14 +47,12 @@
         "title": "Options",
         "data": {
           "scan_interval": "Update interval",
-          "limit": "Items in \"Recent changes\"",
           "history_depth": "Snapshots to scan for the previous price",
           "currency": "Price currency",
           "excluded_watches": "Watches to exclude"
         },
         "data_description": {
           "scan_interval": "How often (minutes) to read the watches from the server.",
-          "limit": "How many recent changes to show in the card.",
           "history_depth": "Maximum number of older snapshots to scan to find a price different from the current one.",
           "currency": "ISO code, for example EUR.",
           "excluded_watches": "These watches create no entities and are hidden from the card."

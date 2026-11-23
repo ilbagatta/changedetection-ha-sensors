@@ -17,13 +17,11 @@ from .const import (
     CONF_CURRENCY,
     CONF_EXCLUDED,
     CONF_HISTORY_DEPTH,
-    CONF_LIMIT,
     CONF_SCAN_INTERVAL,
     CONF_URL,
     CONF_VERIFY_SSL,
     DEFAULT_CURRENCY,
     DEFAULT_HISTORY_DEPTH,
-    DEFAULT_LIMIT,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     INT_OPTIONS,
@@ -143,9 +141,6 @@ class ChangedetectionOptionsFlow(OptionsFlow):
                     selector.NumberSelectorConfig(
                         min=1, max=1440, step=1, mode=selector.NumberSelectorMode.BOX, unit_of_measurement="min"
                     )
-                ),
-                vol.Required(CONF_LIMIT, default=options.get(CONF_LIMIT, DEFAULT_LIMIT)): selector.NumberSelector(
-                    selector.NumberSelectorConfig(min=1, max=50, step=1, mode=selector.NumberSelectorMode.BOX)
                 ),
                 vol.Required(
                     CONF_HISTORY_DEPTH, default=options.get(CONF_HISTORY_DEPTH, DEFAULT_HISTORY_DEPTH)

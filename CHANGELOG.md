@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0
+
+- Card: new `exclude` option ("Watches to hide"), chosen by name in the visual editor.
+- *Recent changes* now lists all watches (newest first); the number of rows is set only in the card.
+  The integration option "Items in Recent changes" is removed (an old saved value is ignored).
+- Card: spacing between the *Price* and *When* headers.
+
 ## 0.1.3
 
 - Card editor: the entity picker lists only the *Recent changes* sensor.

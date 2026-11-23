@@ -8,7 +8,7 @@ from typing import Any, Final
 
 DOMAIN: Final = "changedetection_ha_sensors"
 NAME: Final = "Changedetection HA sensors"
-VERSION: Final = "0.1.3"
+VERSION: Final = "0.2.0"
 LOGGER = logging.getLogger(__package__)
 
 # Configurazione (data)
@@ -18,13 +18,11 @@ CONF_VERIFY_SSL: Final = "verify_ssl"
 
 # Opzioni
 CONF_SCAN_INTERVAL: Final = "scan_interval"  # minuti
-CONF_LIMIT: Final = "limit"  # voci nel sensore "Ultime modifiche"
 CONF_EXCLUDED: Final = "excluded_watches"  # uuid esclusi
 CONF_CURRENCY: Final = "currency"
 CONF_HISTORY_DEPTH: Final = "history_depth"  # rilevazioni lette all'indietro per il prezzo precedente
 
 DEFAULT_SCAN_INTERVAL: Final = 5
-DEFAULT_LIMIT: Final = 10
 DEFAULT_CURRENCY: Final = "EUR"
 DEFAULT_HISTORY_DEPTH: Final = 10
 
@@ -37,7 +35,6 @@ CARD_FILE: Final = "changedetection-card.js"
 
 INT_OPTIONS: Final = {
     CONF_SCAN_INTERVAL: DEFAULT_SCAN_INTERVAL,
-    CONF_LIMIT: DEFAULT_LIMIT,
     CONF_HISTORY_DEPTH: DEFAULT_HISTORY_DEPTH,
 }
 
@@ -49,6 +46,9 @@ def int_option(options: Mapping[str, Any], key: str) -> int:
     except (TypeError, ValueError):
         return INT_OPTIONS[key]
 
+
+# Voci al massimo nell'attributo `watches` di "Recent changes" (la card sceglie quante mostrarne)
+MAX_LIST_ITEMS: Final = 100
 
 # Richieste parallele al server durante l'aggiornamento
 MAX_PARALLEL: Final = 4
