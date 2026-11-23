@@ -8,7 +8,7 @@ from typing import Any, Final
 
 DOMAIN: Final = "changedetection_ha_sensors"
 NAME: Final = "Changedetection HA sensors"
-VERSION: Final = "0.1.2"
+VERSION: Final = "0.1.3"
 LOGGER = logging.getLogger(__package__)
 
 # Configurazione (data)

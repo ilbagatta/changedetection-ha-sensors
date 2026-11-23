@@ -93,7 +93,7 @@ type: custom:changedetection-card
 
 | Option | Default | |
 |---|---|---|
-| `entity` | auto | The `Recent changes` sensor; found automatically if omitted. |
+| `entity` | auto | The `Recent changes` sensor (not a per-watch sensor); found automatically if omitted. |
 | `title` | `Changedetection` | `""` hides the header. |
 | `limit` | `10` | Rows to show (up to the integration option). |
 | `show_text` | `true` | For watches without a price, show the detected text under the name. |

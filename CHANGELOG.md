@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3
+
+- Card editor: the entity picker lists only the *Recent changes* sensor.
+- Card: a wrong `entity` (e.g. a watch price sensor) falls back to the *Recent changes* sensor instead of an empty card.
+
 ## 0.1.2
 
 - Fix: setup failed with `slice indices must be integers` after saving the options (numbers were stored as `10.0`).

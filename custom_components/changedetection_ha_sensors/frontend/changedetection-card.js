@@ -2,23 +2,23 @@
  * Changedetection card — Lovelace card (plain JS, no build), served by the `changedetection_ha_sensors` integration.
  *
  *   type: custom:changedetection-card
- *   entity: sensor.changedetection_io_recent_changes   # optional: found automatically
+ *   entity: sensor.changedetection_io_recent_changes   # optional: found automatically (only this sensor works)
  *   title: Changedetection                             # optional, "" hides the header
  *   limit: 10                                          # optional
  *   show_text: true                                    # optional: text of watches without a price
  */
-const CARD_VERSION = "0.1.2";
+const CARD_VERSION = "0.1.3";
 
 const I18N = {
   en: {
     product: "Product", price: "Price", when: "When", today: "today", yesterday: "yesterday",
     empty: "No changes yet", missing: "Entity not found", out: "out of stock", unviewed: "not viewed yet",
-    title: "Title", entity: "Entity", limit: "Rows", show_text: "Show text of watches without a price",
+    title: "Title", entity: "Recent changes sensor", limit: "Rows", show_text: "Show text of watches without a price",
   },
   it: {
     product: "Prodotto", price: "Prezzo", when: "Quando", today: "oggi", yesterday: "ieri",
     empty: "Ancora nessuna modifica", missing: "Entità non trovata", out: "esaurito", unviewed: "non ancora visto",
-    title: "Titolo", entity: "Entità", limit: "Righe", show_text: "Mostra il testo dei watch senza prezzo",
+    title: "Titolo", entity: "Sensore Ultime modifiche", limit: "Righe", show_text: "Mostra il testo dei watch senza prezzo",
   },
 };
 
@@ -27,8 +27,15 @@ const esc = (value) =>
 
 const safeUrl = (url) => (/^https?:\/\//i.test(url || "") ? url : "");
 
+// Solo il sensore "Recent changes" dell'integrazione ha la lista delle modifiche
+const isListEntity = (hass, id) => Boolean(id && hass.states[id]?.attributes?.changedetection_card);
+
+function listEntities(hass) {
+  return Object.keys(hass.states).filter((id) => isListEntity(hass, id));
+}
+
 function findEntity(hass) {
-  return Object.keys(hass.states).find((id) => hass.states[id].attributes?.changedetection_card);
+  return listEntities(hass)[0];
 }
 
 class ChangedetectionCard extends HTMLElement {
@@ -67,7 +74,11 @@ class ChangedetectionCard extends HTMLElement {
   }
 
   _entityId() {
-    return this._config?.entity || (this._hass ? findEntity(this._hass) : undefined);
+    const configured = this._config?.entity;
+    if (!this._hass) return configured;
+    // Un'entita' sbagliata (es. il prezzo di un watch) non svuota la card: si usa quella giusta
+    if (isListEntity(this._hass, configured)) return configured;
+    return findEntity(this._hass) || configured;
   }
 
   _t(key) {
@@ -211,7 +222,7 @@ class ChangedetectionCardEditor extends HTMLElement {
     }
     this._form.hass = this._hass;
     this._form.schema = [
-      { name: "entity", selector: { entity: { domain: "sensor", integration: "changedetection_ha_sensors" } } },
+      { name: "entity", selector: { entity: { include_entities: listEntities(this._hass) } } },
       { name: "title", selector: { text: {} } },
       { name: "limit", selector: { number: { min: 1, max: 50, mode: "box" } } },
       { name: "show_text", selector: { boolean: {} } },
