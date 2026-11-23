@@ -62,6 +62,28 @@ Nei test l'aggiornamento periodico del coordinator gira in background: usare
 
 Versione: tenere allineate `manifest.json`, `const.VERSION`, `CARD_VERSION` nella card, `pyproject.toml`, CHANGELOG.
 
+### Rilasci (regola dell'utente)
+
+Ogni aggiornamento esce come **release GitHub** (`vX.Y.Z`, `--latest`) con **note brevi**: HACS le mostra nel popup di
+aggiornamento di HA. Formato fisso, prima italiano poi inglese:
+
+```
+### 🇮🇹 Novità
+- ✨ **Nuovo** …   /   🐛 **Corretto** …   /   🎨 **Card** …   (3-5 voci al massimo, linguaggio da utente)
+
+**Dopo l'aggiornamento:** riavvia Home Assistant (e/o ricarica il browser per la card).
+
+---
+
+### 🇬🇧 What's new
+- (stesse voci in inglese)
+
+**After updating:** …
+```
+
+Niente dettagli tecnici interni nelle note (quelli vanno nel CHANGELOG). Ordine: test e ruff verdi → commit → push →
+CI verde → `gh release create vX.Y.Z --latest --notes-file …`.
+
 ## Stato
 
 - 0.1.2 pubblicata su GitHub (fix opzioni float). Installata sull'HA di casa via HACS dall'utente. Da installare sull'HA di casa e poi dismettere il vecchio command_line.
