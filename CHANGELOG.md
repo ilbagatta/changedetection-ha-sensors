@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1
+
+- Integration icon (`brand/`), shown by Home Assistant and HACS.
+- CI: newer GitHub Actions.
+
 ## 0.1.0
 
 First release.

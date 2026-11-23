@@ -1,3 +1,5 @@
+<p align="center"><img src="custom_components/changedetection_ha_sensors/brand/icon.png" width="112" alt="icon"></p>
+
 # Changedetection HA sensors
 
 [![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/docs/faq/custom_repositories)

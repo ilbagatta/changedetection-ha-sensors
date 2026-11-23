@@ -7,7 +7,7 @@
  *   limit: 10                                          # optional
  *   show_text: true                                    # optional: text of watches without a price
  */
-const CARD_VERSION = "0.1.0";
+const CARD_VERSION = "0.1.1";
 
 const I18N = {
   en: {

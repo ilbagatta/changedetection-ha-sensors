@@ -28,6 +28,7 @@ custom_components/changedetection_ha_sensors/
   button.py       Recheck (per watch), Recheck all
   config_flow.py  user (url, api_key, verify_ssl), reauth, reconfigure, opzioni
   frontend/changedetection-card.js   card JS senza build (+ editor con ha-form)
+  brand/icon.png, icon@2x.png        icona (richiesta dal validatore HACS), disegnata con Pillow
 tests/            pytest con HA vero (pytest-homeassistant-custom-component), server finto in conftest.py
 ```
 
@@ -61,4 +62,4 @@ Versione: tenere allineate `manifest.json`, `const.VERSION`, `CARD_VERSION` nell
 
 ## Stato
 
-- 0.1.0: prima versione, 34 test verdi. Da installare sull'HA di casa e poi dismettere il vecchio command_line.
+- 0.1.1 pubblicata su GitHub (release v0.1.0 senza icona, v0.1.1 con icona); CI verde. 34 test verdi. Da installare sull'HA di casa e poi dismettere il vecchio command_line.
