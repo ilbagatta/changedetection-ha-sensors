@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 import logging
-from typing import Final
+from collections.abc import Mapping
+from typing import Any, Final
 
 DOMAIN: Final = "changedetection_ha_sensors"
 NAME: Final = "Changedetection HA sensors"
-VERSION: Final = "0.1.1"
+VERSION: Final = "0.1.2"
 LOGGER = logging.getLogger(__package__)
 
 # Configurazione (data)
@@ -33,6 +34,21 @@ EVENT_CHANGE: Final = f"{DOMAIN}_change"
 # Card servita dall'integrazione
 URL_BASE: Final = f"/{DOMAIN}"
 CARD_FILE: Final = "changedetection-card.js"
+
+INT_OPTIONS: Final = {
+    CONF_SCAN_INTERVAL: DEFAULT_SCAN_INTERVAL,
+    CONF_LIMIT: DEFAULT_LIMIT,
+    CONF_HISTORY_DEPTH: DEFAULT_HISTORY_DEPTH,
+}
+
+
+def int_option(options: Mapping[str, Any], key: str) -> int:
+    """Opzione numerica come intero: il NumberSelector salva float (10.0), le slice vogliono int."""
+    try:
+        return max(1, int(options.get(key, INT_OPTIONS[key])))
+    except (TypeError, ValueError):
+        return INT_OPTIONS[key]
+
 
 # Richieste parallele al server durante l'aggiornamento
 MAX_PARALLEL: Final = 4

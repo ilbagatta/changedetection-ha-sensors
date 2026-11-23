@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from homeassistant import config_entries
+from homeassistant.config_entries import ConfigEntryState
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 
@@ -83,8 +84,12 @@ async def test_options(hass: HomeAssistant, server, entry) -> None:
     assert labels[HELMET] == "Casco"
     result = await hass.config_entries.options.async_configure(
         result["flow_id"],
-        {"scan_interval": 10, CONF_LIMIT: 5, "history_depth": 10, "currency": "EUR", CONF_EXCLUDED: [HELMET]},
+        # come il frontend: il NumberSelector manda float
+        {"scan_interval": 10.0, CONF_LIMIT: 5.0, "history_depth": 10.0, "currency": "EUR", CONF_EXCLUDED: [HELMET]},
     )
     assert result["type"] is FlowResultType.CREATE_ENTRY
     await hass.async_block_till_done()
     assert entry.options[CONF_EXCLUDED] == [HELMET]
+    assert entry.options[CONF_LIMIT] == 5
+    assert isinstance(entry.options[CONF_LIMIT], int)
+    assert entry.state is ConfigEntryState.LOADED

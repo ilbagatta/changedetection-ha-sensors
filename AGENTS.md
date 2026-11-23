@@ -44,6 +44,8 @@ tests/            pytest con HA vero (pytest-homeassistant-custom-component), se
 - **Evento** `changedetection_ha_sensors_change` (dati = `Watch.as_dict()`): mai al primo caricamento ne' per watch nuovi.
 - **Sensore Recent changes**: stato = ora dell'ultima modifica; attributo `watches` (lista per la card) escluso dal
   recorder; attributo `changedetection_card: true` usato dalla card per trovare l'entita' da sola.
+- **Opzioni numeriche**: il `NumberSelector` restituisce float; si salvano come int e si leggono sempre con
+  `const.int_option()` (bug della 0.1.1: `slice indices must be integers`).
 - **Valuta**: opzione (default EUR), il prezzo e' `device_class: monetary` senza `state_class`.
 - Watch nuovi: entita' aggiunte al volo; watch eliminati: entita' non disponibili, dispositivo rimovibile a mano.
 - Card servita dall'integrazione (`/changedetection_ha_sensors/changedetection-card.js?v=VERSION`): niente risorsa Lovelace.
@@ -62,4 +64,4 @@ Versione: tenere allineate `manifest.json`, `const.VERSION`, `CARD_VERSION` nell
 
 ## Stato
 
-- 0.1.1 pubblicata su GitHub (release v0.1.0 senza icona, v0.1.1 con icona); CI verde. 34 test verdi. Da installare sull'HA di casa e poi dismettere il vecchio command_line.
+- 0.1.2 pubblicata su GitHub (fix opzioni float). Installata sull'HA di casa via HACS dall'utente. Da installare sull'HA di casa e poi dismettere il vecchio command_line.

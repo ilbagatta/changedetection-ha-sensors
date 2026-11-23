@@ -133,3 +133,16 @@ async def test_unload(hass: HomeAssistant, server, entry) -> None:
     await _setup(hass, entry)
     assert await hass.config_entries.async_unload(entry.entry_id)
     assert entry.state is ConfigEntryState.NOT_LOADED
+
+
+async def test_float_options_already_saved(hass: HomeAssistant, server, entry) -> None:
+    """Opzioni salvate come float dalla 0.1.1 (10.0): l'integrazione deve partire lo stesso."""
+    entry.add_to_hass(hass)
+    hass.config_entries.async_update_entry(
+        entry, options={"scan_interval": 5.0, "limit": 2.0, "history_depth": 10.0, "currency": "EUR"}
+    )
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    assert entry.state is ConfigEntryState.LOADED
+    assert len(hass.states.get("sensor.changedetection_io_recent_changes").attributes["watches"]) == 2
+    assert hass.states.get(_entity(hass, HELMET, "price")).attributes["previous_price"] == 229.95

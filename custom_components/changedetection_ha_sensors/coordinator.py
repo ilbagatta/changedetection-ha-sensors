@@ -17,13 +17,12 @@ from .const import (
     CONF_EXCLUDED,
     CONF_HISTORY_DEPTH,
     CONF_SCAN_INTERVAL,
-    DEFAULT_HISTORY_DEPTH,
-    DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     EVENT_CHANGE,
     LOGGER,
     MAX_PARALLEL,
     SNAPSHOT_MAX_CHARS,
+    int_option,
 )
 from .parse import clean_text, extract_price, extract_stock, trend
 
@@ -78,7 +77,7 @@ class ChangedetectionCoordinator(DataUpdateCoordinator[dict[str, Watch]]):
             LOGGER,
             config_entry=entry,
             name=DOMAIN,
-            update_interval=timedelta(minutes=entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)),
+            update_interval=timedelta(minutes=int_option(entry.options, CONF_SCAN_INTERVAL)),
         )
         self.client = client
         # uuid -> last_changed gia' elaborato: si rilegge lo storico solo quando cambia
@@ -159,7 +158,7 @@ class ChangedetectionCoordinator(DataUpdateCoordinator[dict[str, Watch]]):
         watch.old_price = None
         if watch.price is None:
             return
-        depth = self.config_entry.options.get(CONF_HISTORY_DEPTH, DEFAULT_HISTORY_DEPTH)
+        depth = int_option(self.config_entry.options, CONF_HISTORY_DEPTH)
         for timestamp in history[1 : depth + 1]:
             price = extract_price(await self.client.async_get_snapshot(watch.uuid, timestamp))
             if price is not None and price != watch.price:

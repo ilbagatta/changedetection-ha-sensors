@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2
+
+- Fix: setup failed with `slice indices must be integers` after saving the options (numbers were stored as `10.0`).
+  Options already saved that way now work too.
+
 ## 0.1.1
 
 - Integration icon (`brand/`), shown by Home Assistant and HACS.

@@ -10,7 +10,7 @@ from homeassistant.components.sensor import SensorDeviceClass, SensorEntity
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
-from .const import CONF_CURRENCY, CONF_LIMIT, DEFAULT_CURRENCY, DEFAULT_LIMIT
+from .const import CONF_CURRENCY, CONF_LIMIT, DEFAULT_CURRENCY, int_option
 from .coordinator import ChangedetectionConfigEntry, ChangedetectionCoordinator
 from .entity import ServerEntity, WatchEntity
 
@@ -121,7 +121,7 @@ class RecentChangesSensor(ServerEntity, SensorEntity):
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
-        limit = self.coordinator.config_entry.options.get(CONF_LIMIT, DEFAULT_LIMIT)
+        limit = int_option(self.coordinator.config_entry.options, CONF_LIMIT)
         currency = self.coordinator.config_entry.options.get(CONF_CURRENCY, DEFAULT_CURRENCY)
         watches = []
         for watch in self.coordinator.recent(limit):

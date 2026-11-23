@@ -26,6 +26,7 @@ from .const import (
     DEFAULT_LIMIT,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
+    INT_OPTIONS,
     LOGGER,
 )
 
@@ -114,7 +115,12 @@ class ChangedetectionConfigFlow(ConfigFlow, domain=DOMAIN):
 class ChangedetectionOptionsFlow(OptionsFlow):
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         if user_input is not None:
-            return self.async_create_entry(data=user_input)
+            # Il NumberSelector restituisce float: si salvano interi
+            data = {**user_input}
+            for key in INT_OPTIONS:
+                if key in data:
+                    data[key] = int(data[key])
+            return self.async_create_entry(data=data)
 
         options = self.config_entry.options
         watches: dict[str, str] = {}
