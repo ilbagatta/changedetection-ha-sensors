@@ -45,6 +45,13 @@
     "step": {
       "init": {
         "title": "Options",
+        "menu_options": {
+          "general": "General",
+          "notifications": "Notifications"
+        }
+      },
+      "general": {
+        "title": "General",
         "data": {
           "scan_interval": "Update interval",
           "history_depth": "Snapshots to scan for the previous price",
@@ -56,6 +63,28 @@
           "history_depth": "Maximum number of older snapshots to scan to find a price different from the current one.",
           "currency": "ISO code, for example EUR.",
           "excluded_watches": "These watches create no entities and are hidden from the card."
+        }
+      },
+      "notifications": {
+        "title": "Notifications",
+        "description": "Notifications for single changes. Per watch you can also turn them off (Notifications switch) or set a target price (Target price number) on the device page.",
+        "data": {
+          "notify_targets": "Send to",
+          "notify_on": "Notify when",
+          "min_drop_percent": "Minimum drop (%)",
+          "min_drop_amount": "Minimum drop (amount)",
+          "cooldown_hours": "Wait between notifications of the same watch",
+          "quiet_start": "Quiet hours from",
+          "quiet_end": "Quiet hours until"
+        },
+        "data_description": {
+          "notify_targets": "One or more notify services, e.g. notify.mobile_app_my_phone. Empty: no notifications.",
+          "notify_on": "Kinds of change that send a notification.",
+          "min_drop_percent": "Price drops smaller than this are ignored (0 = any drop).",
+          "min_drop_amount": "Price drops smaller than this amount are ignored (0 = any drop).",
+          "cooldown_hours": "After a notification, the same watch stays silent for these hours unless the price drops further (0 = never wait).",
+          "quiet_start": "Notifications in this window are held and sent at the end of it. Leave both empty to disable.",
+          "quiet_end": "End of the quiet hours."
         }
       }
     }
@@ -100,6 +129,32 @@
       "recheck_all": {
         "name": "Recheck all"
       }
+    },
+    "switch": {
+      "notifications": {
+        "name": "Notifications"
+      }
+    },
+    "number": {
+      "target_price": {
+        "name": "Target price"
+      }
+    }
+  },
+  "selector": {
+    "notify_on": {
+      "options": {
+        "price_down": "Price dropped",
+        "price_up": "Price increased",
+        "back_in_stock": "Back in stock",
+        "any_change": "Any other change (also pages without a price)"
+      }
+    }
+  },
+  "services": {
+    "test_notification": {
+      "name": "Send test notification",
+      "description": "Sends a test notification to the recipients set in the options."
     }
   }
 }

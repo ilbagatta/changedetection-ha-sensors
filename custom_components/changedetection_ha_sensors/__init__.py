@@ -6,22 +6,38 @@ import contextlib
 from pathlib import Path
 
 from homeassistant.const import Platform
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.typing import ConfigType
 
 from .api import ChangedetectionClient
-from .const import CARD_FILE, CONF_API_KEY, CONF_URL, CONF_VERIFY_SSL, DOMAIN, URL_BASE, VERSION
+from .const import (
+    CARD_FILE,
+    CONF_API_KEY,
+    CONF_URL,
+    CONF_VERIFY_SSL,
+    DOMAIN,
+    SERVICE_TEST_NOTIFICATION,
+    URL_BASE,
+    VERSION,
+)
 from .coordinator import ChangedetectionConfigEntry, ChangedetectionCoordinator
+from .notifications import NotificationManager
 
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
-PLATFORMS = [Platform.BUTTON, Platform.SENSOR]
+PLATFORMS = [Platform.BUTTON, Platform.NUMBER, Platform.SENSOR, Platform.SWITCH]
 
 
 async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     await _async_register_card(hass)
+
+    async def test_notification(call: ServiceCall) -> None:
+        for entry in hass.config_entries.async_loaded_entries(DOMAIN):
+            await entry.runtime_data.notifier.async_send_test()
+
+    hass.services.async_register(DOMAIN, SERVICE_TEST_NOTIFICATION, test_notification)
     return True
 
 
@@ -42,6 +58,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ChangedetectionConfigEnt
     session = async_get_clientsession(hass, verify_ssl=entry.data.get(CONF_VERIFY_SSL, True))
     client = ChangedetectionClient(session, entry.data[CONF_URL], entry.data[CONF_API_KEY])
     coordinator = ChangedetectionCoordinator(hass, entry, client)
+    coordinator.notifier = NotificationManager(hass, entry.entry_id, dict(entry.options))
+    await coordinator.notifier.async_load()
     await coordinator.async_config_entry_first_refresh()
     entry.runtime_data = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -54,7 +72,9 @@ async def _async_reload(hass: HomeAssistant, entry: ChangedetectionConfigEntry) 
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ChangedetectionConfigEntry) -> bool:
-    return await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    if unloaded := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
+        await entry.runtime_data.notifier.async_unload()
+    return unloaded
 
 
 async def async_remove_config_entry_device(

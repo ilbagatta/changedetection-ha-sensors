@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0
+
+- Built-in notifications (Options → Notifications): recipients, kinds of change (price down / up, back in stock, any
+  change), minimum drop in % and amount, cooldown per watch, quiet hours with deferred delivery.
+- Per-watch `Notifications` switch and `Target price` number.
+- `changedetection_ha_sensors.test_notification` action.
+- Options are now a menu: General, Notifications.
+
 ## 0.2.0
 
 - Card: new `exclude` option ("Watches to hide"), chosen by name in the visual editor.

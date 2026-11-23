@@ -9,7 +9,8 @@
 
 Bring your [changedetection.io](https://github.com/dgtlmoon/changedetection.io) watches into Home Assistant:
 **one price sensor per watch**, the **previous price** and the trend, a **change event** for your automations and a
-small, clean **Lovelace card**, all from a UI setup.
+small, clean **Lovelace card**, plus **built-in notifications** with price-drop thresholds, target prices and quiet
+hours, all from a UI setup.
 
 ```
 PRODUCT                                  PRICE          WHEN
@@ -30,12 +31,15 @@ viewed yet in changedetection.io.*
   - `Price` sensor (monetary, with history graphs), with attributes `previous_price`, `trend` (`up` / `down`),
     `in_stock`, `url`;
   - `Last changed` timestamp sensor, with the detected `text`, `error`, `viewed`, `paused`;
-  - `Recheck` button.
+  - `Recheck` button;
+  - `Notifications` switch and `Target price` number (configuration entities).
 - **Server device** with `Recent changes` (feeds the card), `Watches` (count, errors, unviewed) and `Recheck all`.
 - **Previous price** found by walking the snapshot history back to the first *different* price, so snapshots where only
   the stock status changed are skipped.
 - **Light on your server**: only `GET /watch` on every poll; history is read only for watches that actually changed.
-- **Event** `changedetection_ha_sensors_change` on every change, ready for notifications.
+- **Notifications** to your phone on price drops (or rises, back in stock, any change), with minimum drop, target
+  price per watch, cooldown and quiet hours.
+- **Event** `changedetection_ha_sensors_change` on every change, for your own automations.
 - **Lovelace card** served by the integration itself: nothing else to install, with a visual editor.
 - New watches show up automatically; watches can be excluded from the options.
 - English and Italian translations.
@@ -75,12 +79,41 @@ Copy `custom_components/changedetection_ha_sensors` into your `config/custom_com
 
 ### Options
 
+The options have two pages: **General** and **Notifications**.
+
+**General**
+
 | Option | Default | |
 |---|---|---|
 | Update interval | 5 min | How often the watch list is read. |
 | Snapshots to scan for the previous price | 10 | How far back to look for a different price. |
 | Price currency | `EUR` | ISO code used as the unit of the price sensors and by the card. |
 | Watches to exclude | — | No entities, not shown in the card. |
+
+## Notifications
+
+Set them in **Options → Notifications**:
+
+| Option | Default | |
+|---|---|---|
+| Send to | — | One or more `notify` services (e.g. `notify.mobile_app_my_phone`). Empty: no notifications. |
+| Notify when | price dropped, back in stock | Also: price increased, any other change (pages without a price). |
+| Minimum drop (%) / (amount) | 0 | Smaller drops are ignored. |
+| Wait between notifications of the same watch | 6 h | Skipped when the price drops further. |
+| Quiet hours | — | Notifications in the window (e.g. 23:00–08:00) are held and sent when it ends (the latest one per watch). |
+
+Per watch, on the device page:
+
+- **Notifications** switch: silence a single watch without excluding it.
+- **Target price**: notify only when the price is at or below this value (0 = no target).
+
+A notification looks like this, and tapping it opens the product page (Companion app, iOS and Android):
+
+> **📉 Simpson Venom White**
+> €319.95 → €229.95 (-28%)
+
+Use the **Send test notification** action (`changedetection_ha_sensors.test_notification`) to check the recipients.
+Nothing is sent when Home Assistant starts or for newly added watches.
 
 ## Lovelace card
 
@@ -114,7 +147,7 @@ Watches without any amount still get the `Last changed` sensor; their price sens
 
 ## Automations
 
-Every change fires `changedetection_ha_sensors_change` with `uuid`, `title`, `url`, `price`, `old_price`, `trend`,
+For anything the built-in notifications do not cover, every change fires `changedetection_ha_sensors_change` with `uuid`, `title`, `url`, `price`, `old_price`, `trend`,
 `in_stock`, `text`, `last_changed`, `viewed`, `error`, `tags`.
 
 Notify when a price drops:

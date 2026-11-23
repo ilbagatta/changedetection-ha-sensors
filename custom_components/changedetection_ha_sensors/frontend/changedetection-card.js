@@ -8,7 +8,7 @@
  *   exclude: [<uuid>, ...]                             # optional: watches to hide
  *   show_text: true                                    # optional: text of watches without a price
  */
-const CARD_VERSION = "0.2.0";
+const CARD_VERSION = "0.3.0";
 
 const I18N = {
   en: {

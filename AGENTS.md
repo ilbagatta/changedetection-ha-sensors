@@ -26,7 +26,11 @@ custom_components/changedetection_ha_sensors/
   entity.py       dispositivo "Changedetection.io" (server) + un dispositivo per watch (via_device)
   sensor.py       Price, Last changed (per watch); Recent changes, Watches (server)
   button.py       Recheck (per watch), Recheck all
-  config_flow.py  user (url, api_key, verify_ssl), reauth, reconfigure, opzioni
+  switch.py       Notifiche (per watch, config)
+  number.py       Prezzo obiettivo (per watch, config; 0 = nessuno)
+  notifications.py  NotificationManager: regole, invio ai notify, Store (preferenze, ultimo avviso, coda silenzio)
+  config_flow.py  user (url, api_key, verify_ssl), reauth, reconfigure, opzioni a menu (general, notifications)
+  services.yaml   test_notification
   frontend/changedetection-card.js   card JS senza build (+ editor con ha-form)
   brand/icon.png, icon@2x.png        icona (richiesta dal validatore HACS), disegnata con Pillow
 tests/            pytest con HA vero (pytest-homeassistant-custom-component), server finto in conftest.py
@@ -47,6 +51,15 @@ tests/            pytest con HA vero (pytest-homeassistant-custom-component), se
   l'opzione `limit` dell'integrazione e' stata tolta nella 0.2.0; attributo `changedetection_card: true` usato dalla card per trovare l'entita' da sola.
 - **Opzioni numeriche**: il `NumberSelector` restituisce float; si salvano come int e si leggono sempre con
   `const.int_option()` (bug della 0.1.1: `slice indices must be integers`).
+- **Notifiche** (0.3.0, scelte dell'utente: solo avvisi singoli, niente riepilogo, niente "Silenzia 24 h"):
+  - tipo (`classify`): back_in_stock (prima esaurito, ora disponibile) > price_down / price_up (confronto con il prezzo
+    del giro precedente, altrimenti `old_price`) > any_change;
+  - filtri in ordine: destinatari presenti, interruttore del watch, tipo scelto, ribasso minimo (% e importo), prezzo
+    obiettivo (si avvisa solo se prezzo <= obiettivo), attesa per watch (saltata se il prezzo scende sotto l'ultimo
+    avviso); ore di silenzio: coda per watch (vale l'ultima), invio a `quiet_end` e all'avvio se fuori fascia;
+  - invio con `notify.<servizio>` e `data: {url, clickAction}` (Companion iOS/Android); testi it/en da
+    `hass.config.language`; mai al primo caricamento;
+  - preferenze in `Store` `changedetection_ha_sensors.<entry_id>.notifications`, salvate subito allo scaricamento.
 - **Valuta**: opzione (default EUR), il prezzo e' `device_class: monetary` senza `state_class`.
 - Watch nuovi: entita' aggiunte al volo; watch eliminati: entita' non disponibili, dispositivo rimovibile a mano.
 - Card servita dall'integrazione (`/changedetection_ha_sensors/changedetection-card.js?v=VERSION`): niente risorsa Lovelace.
@@ -87,4 +100,4 @@ CI verde → `gh release create vX.Y.Z --latest --notes-file …`.
 
 ## Stato
 
-- 0.2.0: esclusioni nella card. (0.1.2 fix opzioni float, 0.1.3 selettore entita' della card.) Installata sull'HA di casa via HACS dall'utente. Da installare sull'HA di casa e poi dismettere il vecchio command_line.
+- 0.3.0: notifiche. 0.2.0: esclusioni nella card. (0.1.2 fix opzioni float, 0.1.3 selettore entita' della card.) Installata sull'HA di casa via HACS dall'utente. Da installare sull'HA di casa e poi dismettere il vecchio command_line.

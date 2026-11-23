@@ -73,10 +73,13 @@ async def test_reconfigure(hass: HomeAssistant, server, entry) -> None:
 
 async def test_options(hass: HomeAssistant, server, entry) -> None:
     entry.add_to_hass(hass)
+    hass.config_entries.async_update_entry(entry, options={"limit": 10.0, "notify_targets": ["notify.phone"]})
     assert await hass.config_entries.async_setup(entry.entry_id)
     await hass.async_block_till_done()
     result = await hass.config_entries.options.async_init(entry.entry_id)
-    assert result["type"] is FlowResultType.FORM
+    assert result["type"] is FlowResultType.MENU
+    result = await hass.config_entries.options.async_configure(result["flow_id"], {"next_step_id": "general"})
+    assert result["step_id"] == "general"
     options = result["data_schema"].schema
     excluded = next(k for k in options if k == CONF_EXCLUDED)
     labels = {o["value"]: o["label"] for o in options[excluded].config["options"]}
@@ -91,4 +94,34 @@ async def test_options(hass: HomeAssistant, server, entry) -> None:
     assert entry.options[CONF_EXCLUDED] == [HELMET]
     assert entry.options["history_depth"] == 10
     assert isinstance(entry.options["history_depth"], int)
+    assert "limit" not in entry.options  # opzione vecchia tolta
+    assert entry.options["notify_targets"] == ["notify.phone"]  # l'altra pagina resta com'era
+    assert entry.state is ConfigEntryState.LOADED
+
+
+async def test_options_notifications(hass: HomeAssistant, server, entry) -> None:
+    hass.services.async_register("notify", "phone", lambda call: None)
+    entry.add_to_hass(hass)
+    hass.config_entries.async_update_entry(entry, options={"quiet_start": "23:00:00", "quiet_end": "08:00:00"})
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    result = await hass.config_entries.options.async_init(entry.entry_id)
+    result = await hass.config_entries.options.async_configure(result["flow_id"], {"next_step_id": "notifications"})
+    assert result["step_id"] == "notifications"
+    targets = next(k for k in result["data_schema"].schema if k == "notify_targets")
+    assert "notify.phone" in result["data_schema"].schema[targets].config["options"]
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"],
+        {
+            "notify_targets": ["notify.phone"],
+            "notify_on": ["price_down"],
+            "min_drop_percent": 5.0,
+            "min_drop_amount": 0.0,
+            "cooldown_hours": 6.0,
+        },
+    )
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    await hass.async_block_till_done()
+    assert entry.options["notify_targets"] == ["notify.phone"]
+    assert "quiet_start" not in entry.options  # lasciate vuote: tolte
     assert entry.state is ConfigEntryState.LOADED

@@ -45,6 +45,13 @@
     "step": {
       "init": {
         "title": "Opzioni",
+        "menu_options": {
+          "general": "Generali",
+          "notifications": "Notifiche"
+        }
+      },
+      "general": {
+        "title": "Generali",
         "data": {
           "scan_interval": "Aggiornamento",
           "history_depth": "Rilevazioni da esaminare per il prezzo precedente",
@@ -56,6 +63,28 @@
           "history_depth": "Quante rilevazioni precedenti esaminare, al massimo, per trovare un prezzo diverso da quello attuale.",
           "currency": "Codice ISO, per esempio EUR.",
           "excluded_watches": "Questi watch non creano entità e non compaiono nella card."
+        }
+      },
+      "notifications": {
+        "title": "Notifiche",
+        "description": "Avvisi per le singole modifiche. Per ogni watch puoi anche spegnerli (interruttore Notifiche) o impostare un prezzo obiettivo (Prezzo obiettivo) nella pagina del dispositivo.",
+        "data": {
+          "notify_targets": "Invia a",
+          "notify_on": "Avvisa quando",
+          "min_drop_percent": "Ribasso minimo (%)",
+          "min_drop_amount": "Ribasso minimo (importo)",
+          "cooldown_hours": "Attesa tra due avvisi dello stesso watch",
+          "quiet_start": "Ore di silenzio dalle",
+          "quiet_end": "Ore di silenzio fino alle"
+        },
+        "data_description": {
+          "notify_targets": "Uno o più servizi notify, es. notify.mobile_app_iphone. Vuoto: nessuna notifica.",
+          "notify_on": "Tipi di modifica che inviano un avviso.",
+          "min_drop_percent": "I ribassi più piccoli vengono ignorati (0 = qualsiasi ribasso).",
+          "min_drop_amount": "I ribassi inferiori a questo importo vengono ignorati (0 = qualsiasi ribasso).",
+          "cooldown_hours": "Dopo un avviso, lo stesso watch resta in silenzio per queste ore, a meno che il prezzo non scenda ancora (0 = nessuna attesa).",
+          "quiet_start": "Gli avvisi in questa fascia vengono trattenuti e inviati alla fine. Lascia vuoti entrambi per disattivare.",
+          "quiet_end": "Fine delle ore di silenzio."
         }
       }
     }
@@ -100,6 +129,32 @@
       "recheck_all": {
         "name": "Ricontrolla tutti"
       }
+    },
+    "switch": {
+      "notifications": {
+        "name": "Notifiche"
+      }
+    },
+    "number": {
+      "target_price": {
+        "name": "Prezzo obiettivo"
+      }
+    }
+  },
+  "selector": {
+    "notify_on": {
+      "options": {
+        "price_down": "Il prezzo scende",
+        "price_up": "Il prezzo sale",
+        "back_in_stock": "Torna disponibile",
+        "any_change": "Qualsiasi altra modifica (anche pagine senza prezzo)"
+      }
+    }
+  },
+  "services": {
+    "test_notification": {
+      "name": "Invia notifica di prova",
+      "description": "Invia una notifica di prova ai destinatari impostati nelle opzioni."
     }
   }
 }

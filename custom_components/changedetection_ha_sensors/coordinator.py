@@ -83,6 +83,8 @@ class ChangedetectionCoordinator(DataUpdateCoordinator[dict[str, Watch]]):
         # uuid -> last_changed gia' elaborato: si rilegge lo storico solo quando cambia
         self._seen: dict[str, datetime | None] = {}
         self._first = True
+        # NotificationManager, assegnato da __init__ (qui niente import: eviterebbe un ciclo)
+        self.notifier: Any = None
 
     @property
     def excluded(self) -> set[str]:
@@ -139,6 +141,8 @@ class ChangedetectionCoordinator(DataUpdateCoordinator[dict[str, Watch]]):
             self._seen[watch.uuid] = watch.last_changed
             if changed:
                 self.hass.bus.async_fire(EVENT_CHANGE, watch.as_dict())
+                if self.notifier is not None:
+                    await self.notifier.async_handle_change(previous.get(watch.uuid), watch)
 
         await asyncio.gather(*(refresh(w) for w in to_refresh))
         self._first = False

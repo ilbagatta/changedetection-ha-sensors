@@ -14,18 +14,28 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from .api import CannotConnect, ChangedetectionClient, ChangedetectionError, InvalidAuth, normalize_url
 from .const import (
     CONF_API_KEY,
+    CONF_COOLDOWN_HOURS,
     CONF_CURRENCY,
     CONF_EXCLUDED,
     CONF_HISTORY_DEPTH,
+    CONF_MIN_DROP_AMOUNT,
+    CONF_MIN_DROP_PERCENT,
+    CONF_NOTIFY_ON,
+    CONF_NOTIFY_TARGETS,
+    CONF_QUIET_END,
+    CONF_QUIET_START,
     CONF_SCAN_INTERVAL,
     CONF_URL,
     CONF_VERIFY_SSL,
+    DEFAULT_COOLDOWN_HOURS,
     DEFAULT_CURRENCY,
     DEFAULT_HISTORY_DEPTH,
+    DEFAULT_NOTIFY_ON,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
     INT_OPTIONS,
     LOGGER,
+    NOTIFY_KINDS,
 )
 
 PASSWORD = selector.TextSelector(selector.TextSelectorConfig(type=selector.TextSelectorType.PASSWORD))
@@ -111,14 +121,24 @@ class ChangedetectionConfigFlow(ConfigFlow, domain=DOMAIN):
 
 
 class ChangedetectionOptionsFlow(OptionsFlow):
+    """Menu: opzioni generali, notifiche. Ogni pagina salva solo i suoi campi e conserva gli altri."""
+
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        return self.async_show_menu(step_id="init", menu_options=["general", "notifications"])
+
+    def _save(self, user_input: dict[str, Any], drop: tuple[str, ...] = ()) -> ConfigFlowResult:
+        data = {k: v for k, v in self.config_entry.options.items() if k not in drop}
+        data.update(user_input)
+        # Il NumberSelector restituisce float: si salvano interi
+        for key in INT_OPTIONS:
+            if key in data:
+                data[key] = int(data[key])
+        data.pop("limit", None)  # opzione della 0.1.x
+        return self.async_create_entry(data=data)
+
+    async def async_step_general(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         if user_input is not None:
-            # Il NumberSelector restituisce float: si salvano interi
-            data = {**user_input}
-            for key in INT_OPTIONS:
-                if key in data:
-                    data[key] = int(data[key])
-            return self.async_create_entry(data=data)
+            return self._save(user_input)
 
         options = self.config_entry.options
         watches: dict[str, str] = {}
@@ -162,4 +182,73 @@ class ChangedetectionOptionsFlow(OptionsFlow):
                 ),
             }
         )
-        return self.async_show_form(step_id="init", data_schema=schema)
+        return self.async_show_form(step_id="general", data_schema=schema)
+
+    async def async_step_notifications(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
+        if user_input is not None:
+            # Ore di silenzio lasciate vuote: si tolgono
+            return self._save(user_input, drop=(CONF_QUIET_START, CONF_QUIET_END))
+
+        options = self.config_entry.options
+        services = sorted(
+            f"notify.{name}"
+            for name in self.hass.services.async_services_for_domain("notify")
+            if name != "send_message"
+        )
+        for target in options.get(CONF_NOTIFY_TARGETS, []):  # anche se il servizio non c'e' piu'
+            if target not in services:
+                services.append(target)
+
+        def quiet(key: str) -> vol.Optional:
+            value = options.get(key)
+            return vol.Optional(key, description={"suggested_value": value} if value else None)
+
+        schema = vol.Schema(
+            {
+                vol.Optional(
+                    CONF_NOTIFY_TARGETS, default=options.get(CONF_NOTIFY_TARGETS, [])
+                ): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=services, multiple=True, mode=selector.SelectSelectorMode.DROPDOWN, custom_value=True
+                    )
+                ),
+                vol.Required(
+                    CONF_NOTIFY_ON, default=options.get(CONF_NOTIFY_ON, DEFAULT_NOTIFY_ON)
+                ): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=NOTIFY_KINDS,
+                        multiple=True,
+                        mode=selector.SelectSelectorMode.LIST,
+                        translation_key=CONF_NOTIFY_ON,
+                    )
+                ),
+                vol.Required(
+                    CONF_MIN_DROP_PERCENT, default=options.get(CONF_MIN_DROP_PERCENT, 0)
+                ): selector.NumberSelector(
+                    selector.NumberSelectorConfig(
+                        min=0, max=100, step=1, mode=selector.NumberSelectorMode.BOX, unit_of_measurement="%"
+                    )
+                ),
+                vol.Required(
+                    CONF_MIN_DROP_AMOUNT, default=options.get(CONF_MIN_DROP_AMOUNT, 0)
+                ): selector.NumberSelector(
+                    selector.NumberSelectorConfig(
+                        min=0,
+                        max=100000,
+                        step=0.01,
+                        mode=selector.NumberSelectorMode.BOX,
+                        unit_of_measurement=options.get(CONF_CURRENCY, DEFAULT_CURRENCY),
+                    )
+                ),
+                vol.Required(
+                    CONF_COOLDOWN_HOURS, default=options.get(CONF_COOLDOWN_HOURS, DEFAULT_COOLDOWN_HOURS)
+                ): selector.NumberSelector(
+                    selector.NumberSelectorConfig(
+                        min=0, max=168, step=1, mode=selector.NumberSelectorMode.BOX, unit_of_measurement="h"
+                    )
+                ),
+                quiet(CONF_QUIET_START): selector.TimeSelector(),
+                quiet(CONF_QUIET_END): selector.TimeSelector(),
+            }
+        )
+        return self.async_show_form(step_id="notifications", data_schema=schema)
