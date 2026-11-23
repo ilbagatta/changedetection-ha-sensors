@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+
+# Local data (hosts, IPs, keys of real installations)
+docs/ENVIRONMENTS.local.md
+*.local.*
+.env
+secrets.yaml

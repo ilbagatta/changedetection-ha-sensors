@@ -1,0 +1,14 @@
+{
+  "entity": {
+    "sensor": {
+      "price": { "default": "mdi:tag-outline" },
+      "last_changed": { "default": "mdi:update" },
+      "recent_changes": { "default": "mdi:history" },
+      "watch_count": { "default": "mdi:eye-outline" }
+    },
+    "button": {
+      "recheck": { "default": "mdi:refresh" },
+      "recheck_all": { "default": "mdi:refresh-circle" }
+    }
+  }
+}

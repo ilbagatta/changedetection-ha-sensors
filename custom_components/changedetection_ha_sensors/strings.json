@@ -1,0 +1,107 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Changedetection.io",
+        "description": "Connect your changedetection.io instance. The API key is in Settings → API.",
+        "data": {
+          "url": "Server URL",
+          "api_key": "API key",
+          "verify_ssl": "Verify SSL certificate"
+        },
+        "data_description": {
+          "url": "For example http://192.168.1.10:5000"
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigure changedetection.io",
+        "data": {
+          "url": "Server URL",
+          "api_key": "API key",
+          "verify_ssl": "Verify SSL certificate"
+        }
+      },
+      "reauth_confirm": {
+        "title": "New API key",
+        "description": "The API key for {url} is no longer valid: enter the new one.",
+        "data": {
+          "api_key": "API key"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot reach the server.",
+      "invalid_auth": "Invalid API key.",
+      "unknown": "Unexpected error, check the log."
+    },
+    "abort": {
+      "already_configured": "This server is already configured.",
+      "reauth_successful": "API key updated.",
+      "reconfigure_successful": "Configuration updated.",
+      "wrong_server": "The URL belongs to a different server."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Options",
+        "data": {
+          "scan_interval": "Update interval",
+          "limit": "Items in \"Recent changes\"",
+          "history_depth": "Snapshots to scan for the previous price",
+          "currency": "Price currency",
+          "excluded_watches": "Watches to exclude"
+        },
+        "data_description": {
+          "scan_interval": "How often (minutes) to read the watches from the server.",
+          "limit": "How many recent changes to show in the card.",
+          "history_depth": "Maximum number of older snapshots to scan to find a price different from the current one.",
+          "currency": "ISO code, for example EUR.",
+          "excluded_watches": "These watches create no entities and are hidden from the card."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "price": {
+        "name": "Price",
+        "state_attributes": {
+          "previous_price": {
+            "name": "Previous price"
+          },
+          "trend": {
+            "name": "Trend",
+            "state": {
+              "up": "Up",
+              "down": "Down"
+            }
+          },
+          "in_stock": {
+            "name": "In stock"
+          },
+          "url": {
+            "name": "Link"
+          }
+        }
+      },
+      "last_changed": {
+        "name": "Last changed"
+      },
+      "recent_changes": {
+        "name": "Recent changes"
+      },
+      "watch_count": {
+        "name": "Watches"
+      }
+    },
+    "button": {
+      "recheck": {
+        "name": "Recheck"
+      },
+      "recheck_all": {
+        "name": "Recheck all"
+      }
+    }
+  }
+}

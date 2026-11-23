@@ -1,0 +1,18 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  zip:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Zip the integration
+        run: cd custom_components/changedetection_ha_sensors && zip -r ../../changedetection_ha_sensors.zip .
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: changedetection_ha_sensors.zip

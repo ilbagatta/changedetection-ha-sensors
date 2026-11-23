@@ -1,0 +1,14 @@
+{
+  "domain": "changedetection_ha_sensors",
+  "name": "Changedetection HA sensors",
+  "after_dependencies": ["frontend", "lovelace"],
+  "codeowners": ["@ilbagatta"],
+  "config_flow": true,
+  "dependencies": ["http"],
+  "documentation": "https://github.com/ilbagatta/changedetection-ha-sensors",
+  "integration_type": "hub",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/ilbagatta/changedetection-ha-sensors/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

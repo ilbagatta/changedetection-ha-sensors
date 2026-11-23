@@ -1,0 +1,107 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Changedetection.io",
+        "description": "Collega la tua istanza di changedetection.io. La chiave API si trova in Impostazioni → API.",
+        "data": {
+          "url": "Indirizzo del server",
+          "api_key": "Chiave API",
+          "verify_ssl": "Verifica il certificato SSL"
+        },
+        "data_description": {
+          "url": "Per esempio http://192.168.1.10:5000"
+        }
+      },
+      "reconfigure": {
+        "title": "Riconfigura changedetection.io",
+        "data": {
+          "url": "Indirizzo del server",
+          "api_key": "Chiave API",
+          "verify_ssl": "Verifica il certificato SSL"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Nuova chiave API",
+        "description": "La chiave API di {url} non è più valida: inserisci quella nuova.",
+        "data": {
+          "api_key": "Chiave API"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Server non raggiungibile.",
+      "invalid_auth": "Chiave API non valida.",
+      "unknown": "Errore inatteso, controlla il registro."
+    },
+    "abort": {
+      "already_configured": "Questo server è già configurato.",
+      "reauth_successful": "Chiave API aggiornata.",
+      "reconfigure_successful": "Configurazione aggiornata.",
+      "wrong_server": "L'indirizzo appartiene a un altro server."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opzioni",
+        "data": {
+          "scan_interval": "Aggiornamento",
+          "limit": "Voci in \"Ultime modifiche\"",
+          "history_depth": "Rilevazioni da esaminare per il prezzo precedente",
+          "currency": "Valuta dei prezzi",
+          "excluded_watches": "Watch da escludere"
+        },
+        "data_description": {
+          "scan_interval": "Ogni quanti minuti leggere i watch dal server.",
+          "limit": "Quante modifiche recenti mostrare nella card.",
+          "history_depth": "Quante rilevazioni precedenti esaminare, al massimo, per trovare un prezzo diverso da quello attuale.",
+          "currency": "Codice ISO, per esempio EUR.",
+          "excluded_watches": "Questi watch non creano entità e non compaiono nella card."
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "price": {
+        "name": "Prezzo",
+        "state_attributes": {
+          "previous_price": {
+            "name": "Prezzo precedente"
+          },
+          "trend": {
+            "name": "Andamento",
+            "state": {
+              "up": "Salito",
+              "down": "Sceso"
+            }
+          },
+          "in_stock": {
+            "name": "Disponibile"
+          },
+          "url": {
+            "name": "Link"
+          }
+        }
+      },
+      "last_changed": {
+        "name": "Ultima modifica"
+      },
+      "recent_changes": {
+        "name": "Ultime modifiche"
+      },
+      "watch_count": {
+        "name": "Watch seguiti"
+      }
+    },
+    "button": {
+      "recheck": {
+        "name": "Ricontrolla"
+      },
+      "recheck_all": {
+        "name": "Ricontrolla tutti"
+      }
+    }
+  }
+}
