@@ -21,8 +21,7 @@ PRODUCT                                  PRICE          WHEN
   News page        New article published…     —          17/11
 ```
 
-*Old price struck through, new price green when it drops and red when it rises; the dot marks changes you have not
-viewed yet in changedetection.io.*
+*Old price struck through, new price green when it drops and red when it rises; the dot marks changes made today.*
 
 ## Features
 

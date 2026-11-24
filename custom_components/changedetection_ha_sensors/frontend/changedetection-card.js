@@ -8,17 +8,17 @@
  *   exclude: [<uuid>, ...]                             # optional: watches to hide
  *   show_text: true                                    # optional: text of watches without a price
  */
-const CARD_VERSION = "0.3.0";
+const CARD_VERSION = "0.3.1";
 
 const I18N = {
   en: {
     product: "Product", price: "Price", when: "When", today: "today", yesterday: "yesterday",
-    empty: "No changes yet", missing: "Entity not found", out: "out of stock", unviewed: "not viewed yet",
+    empty: "No changes yet", missing: "Entity not found", out: "out of stock", new_today: "changed today",
     title: "Title", entity: "Recent changes sensor", limit: "Rows", exclude: "Watches to hide", show_text: "Show text of watches without a price",
   },
   it: {
     product: "Prodotto", price: "Prezzo", when: "Quando", today: "oggi", yesterday: "ieri",
-    empty: "Ancora nessuna modifica", missing: "Entità non trovata", out: "esaurito", unviewed: "non ancora visto",
+    empty: "Ancora nessuna modifica", missing: "Entità non trovata", out: "esaurito", new_today: "modificato oggi",
     title: "Titolo", entity: "Sensore Ultime modifiche", limit: "Righe", exclude: "Watch da nascondere", show_text: "Mostra il testo dei watch senza prezzo",
   },
 };
@@ -134,7 +134,7 @@ class ChangedetectionCard extends HTMLElement {
 
     return `
       <tr class="${isToday ? "today" : ""}">
-        <td class="dot">${item.viewed === false ? `<span title="${esc(this._t("unviewed"))}"></span>` : ""}</td>
+        <td class="dot">${isToday ? `<span title="${esc(this._t("new_today"))}"></span>` : ""}</td>
         <td class="name"><div class="title">${name}${flags.join("")}</div>${text}</td>
         <td class="price">${price || "<span class=\"none\">—</span>"}</td>
         <td class="when">${esc(this._when(item.last_changed))}</td>

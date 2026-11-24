@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1
+
+- Card: the dot now marks watches changed today (it used to mark changes not yet viewed in changedetection.io).
+
 ## 0.3.0
 
 - Built-in notifications (Options → Notifications): recipients, kinds of change (price down / up, back in stock, any
